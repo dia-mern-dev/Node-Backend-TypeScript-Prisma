@@ -10,10 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
 model User {
-  id        Int    @id @default(autoincrement())
-  email     String @unique
-  firstName String
-  lastName  String
-  postCode  String
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  firstName  String
+  lastName   String
+  postCode   String
+  birthday   DateTime
+  address    String?
+  role       Role     @default(USER)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
