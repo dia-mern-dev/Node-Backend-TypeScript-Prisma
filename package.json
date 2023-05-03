@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "ts-node src/index.ts",
     "dev": "npx nodemon --exec ts-node src/index.ts",
+    "postinstall": "prisma generate",
     "lint": "eslint --fix --ext .ts --no-error-on-unmatched-pattern \"src/**/*.ts\" \"test/**/*.ts\""
   },
   "author": "",
