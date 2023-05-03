@@ -1,15 +1,19 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
 import bodyParser from "body-parser";
 import logger from "jet-logger";
+
+import apiRouter from "./routes";
 
 const app: Application = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", (req: Request, res: Response) => {
-  res.json({ data: "Healthy" });
-});
+// app.use("/", (req: Request, res: Response) => {
+//   res.json({ data: "Healthy" });
+// });
+
+app.use("/api", apiRouter);
 
 const PORT = process.env.PORT || 5000;
 
