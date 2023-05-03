@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import bodyParser from "body-parser";
+import logger from "jet-logger";
 
 const app: Application = express();
 
@@ -13,5 +14,5 @@ app.get("/", (req: Request, res: Response) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on PORT ${PORT}`);
+  logger.info("Server is running on PORT: " + PORT);
 });
