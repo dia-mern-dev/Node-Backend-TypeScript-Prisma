@@ -1,11 +1,10 @@
 import { Router } from "express";
 
+import { login, register } from "./handler";
+
 const authRouter = Router();
 
-authRouter.post("/register", (req, res) => {
-  const data = req.body;
-  console.log("data: ", data);
-  return res.json({ message: "you called register api" });
-});
+authRouter.post("/register", login);
+authRouter.post("/register", register);
 
 export default authRouter;
