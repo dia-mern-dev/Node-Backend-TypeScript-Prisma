@@ -9,10 +9,6 @@ const app: Application = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// app.use("/", (req: Request, res: Response) => {
-//   res.json({ data: "Healthy" });
-// });
-
 app.use("/api", apiRouter);
 
 const PORT = process.env.PORT || 5000;
