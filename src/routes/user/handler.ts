@@ -4,7 +4,7 @@ import { hashSync } from "bcryptjs";
 
 import prisma from "../../services/prisma";
 import { IRegisterInfo } from "../../utils/types";
-import { filterUserWithoutPass } from "../../utils/functions";
+import { filterUserWithoutPass } from "../../utils/function";
 
 export const createUser = async (req: Request, res: Response) => {
   try {

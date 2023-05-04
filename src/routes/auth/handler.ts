@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { compareSync } from "bcryptjs";
 
 import prisma from "../../services/prisma";
-import { filterUserWithoutPass } from "../../utils/functions";
+import { filterUserWithoutPass } from "../../utils/function";
 import { generateToken } from "./helper";
 
 export const login = async (req: Request, res: Response) => {
