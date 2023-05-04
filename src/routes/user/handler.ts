@@ -6,24 +6,6 @@ import prisma from "../../services/prisma";
 import { IRegisterInfo } from "../../utils/types";
 import { filterUserWithoutPass } from "../../utils/function";
 
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    const { email, firstName, lastName, password, phone, role }: IRegisterInfo = req.body;
-
-    const existingUser = await prisma.user.findUnique({ where: { email: email } });
-    if (existingUser) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Email already exist" });
-    }
-    const user = await prisma.user.create({
-      data: { email, firstName, lastName, password: hashSync(password, 8), phone, role },
-    });
-
-    return res.status(StatusCodes.OK).json({ result: user });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
-  }
-};
-
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
