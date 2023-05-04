@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { compareSync } from "bcryptjs";
 
-import prisma from "../../lib/prisma";
+import prisma from "../../services/prisma";
 import { filterUserWithoutPass } from "../../utils/functions";
 
 export const login = async (req: Request, res: Response) => {
@@ -11,7 +11,7 @@ export const login = async (req: Request, res: Response) => {
 
     const user = await prisma.user.findUnique({ where: { email: email } });
     if (!user) {
-      return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "User not found" });
+      return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "Unregistered account" });
     }
 
     const isValidPassword = compareSync(password, user.password);
