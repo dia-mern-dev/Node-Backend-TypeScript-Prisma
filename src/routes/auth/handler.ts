@@ -4,10 +4,11 @@ import { compareSync } from "bcryptjs";
 
 import prisma from "../../services/prisma";
 import { filterUserWithoutPass } from "../../utils/functions";
+import { generateToken } from "./helper";
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, remember } = req.body;
 
     const user = await prisma.user.findUnique({ where: { email: email } });
     if (!user) {
@@ -20,7 +21,15 @@ export const login = async (req: Request, res: Response) => {
       return res.status(StatusCodes.BAD_REQUEST).json({ message: "Password is not correct." });
     }
 
-    return res.status(StatusCodes.OK).json({ result: filterUserWithoutPass(user) });
+    const { accessToken, refreshToken } = generateToken(user.id, remember);
+
+    return res.status(StatusCodes.OK).json({
+      result: filterUserWithoutPass(user),
+      token: {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      },
+    });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }
