@@ -48,7 +48,7 @@ export const register = async (req: Request, res: Response) => {
       data: { email, firstName, lastName, password: hashSync(password, 8), phone, role },
     });
 
-    return res.status(StatusCodes.OK).json({ result: user });
+    return res.status(StatusCodes.OK).json({ result: filterUserWithoutPass(user) });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }

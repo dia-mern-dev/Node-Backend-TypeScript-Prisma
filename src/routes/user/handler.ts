@@ -5,9 +5,9 @@ import prisma from "../../services/prisma";
 import { IRegisterInfo } from "../../utils/types";
 import { filterUserWithoutPass } from "../../utils/function";
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateCurrentUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.payload;
     const { firstName, lastName, phone, role }: IRegisterInfo = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { id: parseInt(id) } });
@@ -20,15 +20,15 @@ export const updateUser = async (req: Request, res: Response) => {
       data: { firstName, lastName, phone, role },
     });
 
-    return res.status(StatusCodes.OK).json({ result: result });
+    return res.status(StatusCodes.OK).json({ result: filterUserWithoutPass(result) });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteCurrentUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.payload;
 
     const existingUser = await prisma.user.findUnique({ where: { id: parseInt(id) } });
 
@@ -44,9 +44,10 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
+export const getCurrentUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.payload;
+    console.log("id: ", id);
     const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
 
     if (!user) {

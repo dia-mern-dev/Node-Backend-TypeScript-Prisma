@@ -1,12 +1,12 @@
 import { Router } from "express";
 
-import { deleteUser, getAllUsers, getUserById, updateUser } from "./handler";
+import { deleteCurrentUser, getAllUsers, getCurrentUser, updateCurrentUser } from "./handler";
 
 const userRouter = Router();
 
-userRouter.put("/:id", updateUser);
-userRouter.delete("/:id", deleteUser);
-userRouter.get("/", getAllUsers);
-userRouter.get("/:id", getUserById);
+userRouter.put("/", updateCurrentUser);
+userRouter.delete("/", deleteCurrentUser);
+userRouter.get("/", getCurrentUser);
+userRouter.get("/all", getAllUsers);
 
 export default userRouter;
