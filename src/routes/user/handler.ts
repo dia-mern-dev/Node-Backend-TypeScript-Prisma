@@ -4,6 +4,7 @@ import { hashSync } from "bcryptjs";
 
 import prisma from "../../lib/prisma";
 import { IRegisterInfo } from "../../utils/types";
+import { filterUserWithoutPass } from "../../utils/functions";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -71,11 +72,9 @@ export const getUserById = async (req: Request, res: Response) => {
       return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "User not found" });
     }
 
-    const data: any = { ...user };
+    const filterUser = filterUserWithoutPass({ ...user });
 
-    delete data.password;
-
-    return res.status(StatusCodes.OK).json({ result: data });
+    return res.status(StatusCodes.OK).json({ result: filterUser });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }
@@ -89,11 +88,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
       return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "Users not found." });
     }
 
-    const resData = users.map((item) => {
-      const user: any = { ...item };
-      delete user.password;
-      return user;
-    });
+    const resData = users.map((item) => filterUserWithoutPass({ ...item }));
 
     return res.status(StatusCodes.OK).json({ result: resData });
   } catch (error) {
