@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { hashSync } from "bcryptjs";
 
 import prisma from "../../services/prisma";
 import { IRegisterInfo } from "../../utils/types";

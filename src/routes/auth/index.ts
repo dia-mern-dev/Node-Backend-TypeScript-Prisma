@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { login, register } from "./handler";
-import { yupValidator } from "../../middleware/yupValidator";
+import { yupValidator } from "../../middleware/validationMiddleware";
 import { registerSchema } from "../../utils/schema/user";
 
 const authRouter = Router();
