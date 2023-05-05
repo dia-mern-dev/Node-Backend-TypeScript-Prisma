@@ -32,3 +32,7 @@ export const generateToken = (id: number, remember = false) => {
 
   return { accessToken, refreshToken };
 };
+
+export const revokeTokens = async (id: number) => {
+  await prisma.userToken.deleteMany({ where: { userId: id } });
+};

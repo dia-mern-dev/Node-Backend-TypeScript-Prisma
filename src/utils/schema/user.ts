@@ -14,3 +14,11 @@ export const registerSchema = yup.object({
     role: yup.mixed().oneOf(Object.values(ROLE)),
   }),
 });
+
+export const loginSchema = yup.object({
+  body: yup.object({
+    email: yup.string().email().required(),
+    password: yup.string().required(),
+    remember: yup.boolean(),
+  }),
+});

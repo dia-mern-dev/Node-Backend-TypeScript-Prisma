@@ -5,7 +5,7 @@ import { compareSync, hashSync } from "bcryptjs";
 import prisma from "../../services/prisma";
 import { IRegisterInfo } from "../../utils/types";
 import { filterUserWithoutPass } from "../../utils/function";
-import { generateToken } from "./helper";
+import { generateToken, revokeTokens } from "./helper";
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -49,6 +49,18 @@ export const register = async (req: Request, res: Response) => {
     });
 
     return res.status(StatusCodes.OK).json({ result: filterUserWithoutPass(user) });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.payload;
+
+    await revokeTokens(parseInt(id));
+
+    return res.status(StatusCodes.OK).json({ message: "Logged out successfully" });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }
