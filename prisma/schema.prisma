@@ -22,6 +22,7 @@ model User {
   lastName   String
   phone      String
   password   String
+  avatar     String?
   role       Role        @default(USER)
   UserToken  UserToken[]
   created_at DateTime    @default(now())

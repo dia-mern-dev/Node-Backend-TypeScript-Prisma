@@ -4,6 +4,8 @@ import logger from "jet-logger";
 import * as dotenv from "dotenv";
 import cors from "cors";
 
+import fileUpload from "express-fileupload";
+
 import apiRouter from "./routes";
 
 dotenv.config();
@@ -12,6 +14,9 @@ const app: Application = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(fileUpload());
+app.use(express.static("src/public/upload"));
 
 app.use(cors({ origin: "*" }));
 

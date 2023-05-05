@@ -1,3 +1,4 @@
+import fileUpload from "express-fileupload";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
@@ -37,6 +38,7 @@ export const deleteCurrentUser = async (req: Request, res: Response) => {
     }
 
     await prisma.user.delete({ where: { id: parseInt(id) } });
+    await prisma.userToken.deleteMany({ where: { userId: existingUser.id } });
 
     return res.status(StatusCodes.OK).json({ message: "User Deleted" });
   } catch (error) {
@@ -47,7 +49,6 @@ export const deleteCurrentUser = async (req: Request, res: Response) => {
 export const getCurrentUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.payload;
-    console.log("id: ", id);
     const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
 
     if (!user) {
@@ -73,6 +74,31 @@ export const getAllUsers = async (req: Request, res: Response) => {
     const resData = users.map((item) => filterUserWithoutPass({ ...item }));
 
     return res.status(StatusCodes.OK).json({ result: resData });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
+  }
+};
+
+export const uploadAvatar = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.payload;
+    const file = req.files?.file as fileUpload.UploadedFile;
+
+    const avatarPath = `avatar/${id}.${file.mimetype.split("/")[1]}`;
+
+    file.mv(`src/public/upload/${avatarPath}`);
+
+    const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
+
+    if (!user) {
+      return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "User not found" });
+    }
+
+    const avatarUrl = `http://192.168.116.22:5000/${avatarPath}`;
+
+    await prisma.user.update({ where: { id: parseInt(id) }, data: { avatar: avatarUrl } });
+
+    return res.status(StatusCodes.OK).json({ message: "OK" });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }

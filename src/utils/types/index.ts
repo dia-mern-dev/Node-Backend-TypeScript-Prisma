@@ -25,4 +25,5 @@ export interface IUser {
   phone: string;
   password: string;
   role: string;
+  avatar: string | null;
 }

@@ -136,3 +136,5 @@ dist
 prisma/migrations
 
 yarn.lock
+
+src/public/upload/*
