@@ -32,6 +32,7 @@ model UserToken {
   id           String   @id @unique
   refreshToken String
   userId       Int
+  remember     Boolean  @default(false)
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   create_at    DateTime @default(now())
   update_at    DateTime @updatedAt
