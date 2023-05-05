@@ -1,6 +1,7 @@
 import fileUpload from "express-fileupload";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import fs from "fs-extra";
 
 import prisma from "../../services/prisma";
 import { IRegisterInfo } from "../../utils/types";
@@ -85,6 +86,8 @@ export const uploadAvatar = async (req: Request, res: Response) => {
     const file = req.files?.file as fileUpload.UploadedFile;
 
     const avatarPath = `avatar/${id}.${file.mimetype.split("/")[1]}`;
+
+    fs.ensureDir("src/public/upload/avatar");
 
     file.mv(`src/public/upload/${avatarPath}`);
 
