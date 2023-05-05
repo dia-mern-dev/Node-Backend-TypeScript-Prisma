@@ -8,9 +8,9 @@ export const generateJwtToken = (data: { [key: string]: string }, secretKey: str
   return expiresIn ? jwt.sign(data, secretKey, { expiresIn }) : jwt.sign(data, secretKey);
 };
 
-export const addTokenToWhiteList = async (userId: number, refreshToken: string) => {
+export const addTokenToWhiteList = async (jwtId: string, userId: number, refreshToken: string) => {
   return await prisma.userToken.create({
-    data: { userId: userId, refreshToken: hashSync(refreshToken, 10) },
+    data: { id: jwtId, userId: userId, refreshToken: hashSync(refreshToken, 10) },
   });
 };
 
@@ -28,7 +28,7 @@ export const generateToken = (id: number, remember = false) => {
     remember ? process.env.REFRESH_REMEMBER_EXPIRE_TIME : process.env.REFRESH_EXPIRE_TIME,
   );
 
-  addTokenToWhiteList(id, refreshToken);
+  addTokenToWhiteList(jwtId, id, refreshToken);
 
   return { accessToken, refreshToken };
 };
