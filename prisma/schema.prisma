@@ -11,29 +11,28 @@ datasource db {
 }
 
 enum Role {
-  SUPER_ADMIN
   ADMIN
   USER
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
   firstName  String
   lastName   String
   phone      String
   password   String
-  role       Role     @default(USER)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  Post       Post[]
+  role       Role        @default(USER)
+  UserToken  UserToken[]
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+model UserToken {
+  id           Int      @id @default(autoincrement())
+  refreshToken String
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  create_at    DateTime @default(now())
+  update_at    DateTime @updatedAt
 }

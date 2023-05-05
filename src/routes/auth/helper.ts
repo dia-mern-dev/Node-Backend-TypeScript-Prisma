@@ -1,5 +1,18 @@
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
+import { hashSync } from "bcryptjs";
+
+import prisma from "../../services/prisma";
+
+export const generateJwtToken = (data: { [key: string]: string }, secretKey: string, expiresIn?: string) => {
+  return expiresIn ? jwt.sign(data, secretKey, { expiresIn }) : jwt.sign(data, secretKey);
+};
+
+export const addTokenToWhiteList = async (userId: number, refreshToken: string) => {
+  return await prisma.userToken.create({
+    data: { userId: userId, refreshToken: hashSync(refreshToken, 10) },
+  });
+};
 
 export const generateToken = (id: number, remember = false) => {
   const accessToken = generateJwtToken(
@@ -14,9 +27,8 @@ export const generateToken = (id: number, remember = false) => {
     process.env.REFRESH_SECRET_KEY ?? "",
     remember ? process.env.REFRESH_REMEMBER_EXPIRE_TIME : process.env.REFRESH_EXPIRE_TIME,
   );
-  return { accessToken, refreshToken };
-};
 
-export const generateJwtToken = (data: { [key: string]: string }, secretKey: string, expiresIn?: string) => {
-  return expiresIn ? jwt.sign(data, secretKey, { expiresIn }) : jwt.sign(data, secretKey);
+  addTokenToWhiteList(id, refreshToken);
+
+  return { accessToken, refreshToken };
 };
