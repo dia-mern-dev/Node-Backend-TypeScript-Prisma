@@ -26,4 +26,5 @@ export interface IUser {
   password: string;
   role: string;
   avatar: string | null;
+  photo: string | null;
 }

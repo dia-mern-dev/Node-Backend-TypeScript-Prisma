@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { uploadAvatar } from "./handler";
+import { uploadPhotos } from "./handler";
 
 const uploadRouter = Router();
 
-uploadRouter.post("/", uploadAvatar);
+uploadRouter.post("/", uploadPhotos);
 
 export default uploadRouter;

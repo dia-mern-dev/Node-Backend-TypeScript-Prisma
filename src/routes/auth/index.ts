@@ -1,9 +1,9 @@
 import { Router } from "express";
 
-import { login, logout, repairToken, register } from "./handler";
-import { yupValidator } from "../../middleware/validationMiddleware";
-import { loginSchema, registerSchema } from "../../utils/schema/user";
 import { authMiddleware } from "../../middleware/authMiddleware";
+import { login, logout, repairToken, register } from "./handler";
+import { loginSchema, registerSchema } from "../../utils/schema/user";
+import { yupValidator } from "../../middleware/validationMiddleware";
 
 const authRouter = Router();
 

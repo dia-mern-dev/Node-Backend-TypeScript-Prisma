@@ -1,11 +1,11 @@
 import fileUpload from "express-fileupload";
+import fs from "fs-extra";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import fs from "fs-extra";
 
 import prisma from "../../services/prisma";
 import { IRegisterInfo } from "../../utils/types";
-import { filterUserWithoutPass } from "../../utils/function";
+import { filterUserWithoutPass, randomId } from "../../utils/function";
 
 export const updateCurrentUser = async (req: Request, res: Response) => {
   try {
@@ -85,6 +85,11 @@ export const uploadAvatar = async (req: Request, res: Response) => {
     const { id } = req.payload;
     const file = req.files?.file as fileUpload.UploadedFile;
 
+    const validImageTypes = ["image/gif", "image/jpeg", "image/png", "image/jpg"];
+    if (!validImageTypes.includes(file.mimetype)) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "File type is not match! (gif, jpeg, png, jpg)" });
+    }
+
     const avatarPath = `avatar/${id}.${file.mimetype.split("/")[1]}`;
 
     fs.ensureDir("src/public/upload/avatar");
@@ -101,7 +106,33 @@ export const uploadAvatar = async (req: Request, res: Response) => {
 
     await prisma.user.update({ where: { id: parseInt(id) }, data: { avatar: avatarUrl } });
 
-    return res.status(StatusCodes.OK).json({ message: "OK" });
+    return res.status(StatusCodes.OK).json({ message: "Uploaded successfully" });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
+  }
+};
+
+export const uploadPhotos = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.payload;
+    const files = req.files?.file as fileUpload.UploadedFile[];
+
+    const photoUrls = files
+      ?.filter((item) => ["image/gif", "image/jpeg", "image/png", "image/jpg"].includes(item?.mimetype))
+      .map((file) => {
+        const filePath = `photo/${id}-${randomId(4)}.${file.name?.split(".")[1]}`;
+        fs.ensureDir("src/public/upload/photo");
+        file.mv(`src/public/upload/${filePath}`, (error) => {
+          if (error) {
+            return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "Upload error" });
+          }
+        });
+        return filePath;
+      });
+
+    await prisma.user.update({ where: { id: parseInt(id) }, data: { photo: photoUrls.join(",") } });
+
+    return res.status(StatusCodes.OK).json({ message: "Uploaded successfully" });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }
