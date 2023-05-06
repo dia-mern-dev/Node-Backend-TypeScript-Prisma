@@ -102,9 +102,7 @@ export const uploadAvatar = async (req: Request, res: Response) => {
       return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "User not found" });
     }
 
-    const avatarUrl = `http://192.168.116.22:5000/${avatarPath}`;
-
-    await prisma.user.update({ where: { id: parseInt(id) }, data: { avatar: avatarUrl } });
+    await prisma.user.update({ where: { id: parseInt(id) }, data: { avatar: avatarPath } });
 
     return res.status(StatusCodes.OK).json({ message: "Uploaded successfully" });
   } catch (error) {
@@ -117,20 +115,35 @@ export const uploadPhotos = async (req: Request, res: Response) => {
     const { id } = req.payload;
     const files = req.files?.file as fileUpload.UploadedFile[];
 
-    const photoUrls = files
-      ?.filter((item) => ["image/gif", "image/jpeg", "image/png", "image/jpg"].includes(item?.mimetype))
-      .map((file) => {
-        const filePath = `photo/${id}-${randomId(4)}.${file.name?.split(".")[1]}`;
-        fs.ensureDir("src/public/upload/photo");
-        file.mv(`src/public/upload/${filePath}`, (error) => {
-          if (error) {
-            return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "Upload error" });
-          }
-        });
-        return filePath;
-      });
+    fs.ensureDir("src/public/upload/photo");
 
-    await prisma.user.update({ where: { id: parseInt(id) }, data: { photo: photoUrls.join(",") } });
+    if (!!files.length) {
+      const photoUrls = files
+        ?.filter((item) => ["image/gif", "image/jpeg", "image/png", "image/jpg"].includes(item?.mimetype))
+        .map((file) => {
+          const filePath = `photo/${id}-${randomId(4)}.${file.name?.split(".")[1]}`;
+          file.mv(`src/public/upload/${filePath}`, (error) => {
+            if (error) {
+              return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "Upload error" });
+            }
+          });
+          return filePath;
+        });
+      await prisma.user.update({ where: { id: parseInt(id) }, data: { photo: photoUrls.join(",") } });
+    } else {
+      const file = files as unknown as fileUpload.UploadedFile;
+
+      const validImageTypes = ["image/gif", "image/jpeg", "image/png", "image/jpg"];
+      if (!validImageTypes.includes(file.mimetype)) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "File type is not match! (gif, jpeg, png, jpg)" });
+      }
+
+      const filePath = `photo/${id}-${randomId(4)}.${file?.name?.split(".")[1]}`;
+
+      file.mv(`src/public/upload/${filePath}`);
+
+      await prisma.user.update({ where: { id: parseInt(id) }, data: { photo: filePath } });
+    }
 
     return res.status(StatusCodes.OK).json({ message: "Uploaded successfully" });
   } catch (error) {
