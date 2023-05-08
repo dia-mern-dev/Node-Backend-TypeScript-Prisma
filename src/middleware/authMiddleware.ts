@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-
 import { StatusCodes } from "http-status-codes";
+
+import prisma from "../services/prisma";
 
 declare module "express-serve-static-core" {
   interface Request {

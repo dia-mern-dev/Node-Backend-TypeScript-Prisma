@@ -150,3 +150,37 @@ export const uploadPhotos = async (req: Request, res: Response) => {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }
 };
+
+export const deleteImage = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.payload;
+    const { imagePath, imageType }: { imagePath: string[]; imageType: string } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
+
+    if (!user) {
+      return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "User not found" });
+    }
+
+    const imagePaths = "photo/4-3530.jpg";
+
+    if (!imagePath) {
+      return res.status(StatusCodes.BAD_GATEWAY).json({ error: "Image path is not provided." });
+    }
+
+    if (imageType === "photo") {
+      fs.unlink(`src/public/upload/${imagePath}`);
+      const newPath = user?.photo?.replace(`${imagePaths},`, "");
+      await prisma.user.update({ where: { id: parseInt(id) }, data: { photo: newPath } });
+    }
+
+    if (imageType === "avatar") {
+      fs.unlink(`src/public/upload/${user.avatar}`);
+      await prisma.user.update({ where: { id: parseInt(id) }, data: { avatar: null } });
+    }
+
+    return res.status(StatusCodes.OK).json({ message: "OK" });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
+  }
+};

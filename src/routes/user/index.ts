@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   deleteCurrentUser,
+  deleteImage,
   getAllUsers,
   getCurrentUser,
   updateCurrentUser,
@@ -17,5 +18,6 @@ userRouter.get("/", getCurrentUser);
 userRouter.get("/all", getAllUsers);
 userRouter.put("/avatar", uploadAvatar);
 userRouter.put("/photo", uploadPhotos);
+userRouter.put("/delete-image", deleteImage);
 
 export default userRouter;
