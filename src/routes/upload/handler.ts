@@ -1,5 +1,6 @@
 import fileUpload from "express-fileupload";
 import fs from "fs-extra";
+import multer from "multer";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
@@ -27,6 +28,31 @@ export const uploadPhotos = async (req: Request, res: Response) => {
     await prisma.user.update({ where: { id: parseInt(id) }, data: { photo: photoUrls.join(",") } });
 
     return res.status(StatusCodes.OK).json({ message: "Uploaded successfully" });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
+  }
+};
+
+export const uploadWithMulter = (req: Request, res: Response) => {
+  try {
+    const { id } = req.payload;
+    const file = req.file;
+    console.log("file: ", file);
+
+    const storageEngine = multer.diskStorage({
+      destination: "./src/public/multer/image",
+      filename: (req, file, cb) => {
+        cb(null, `${Date.now()}--${file.originalname}`);
+      },
+    });
+
+    const upload = multer({
+      storage: storageEngine,
+    });
+
+    upload.single("file");
+
+    return res.status(StatusCodes.OK).json({ message: "OK" });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }
