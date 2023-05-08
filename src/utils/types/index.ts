@@ -27,4 +27,6 @@ export interface IUser {
   role: string;
   avatar: string | null;
   photo: string | null;
+  created_at?: Date;
+  updated_at?: Date;
 }
