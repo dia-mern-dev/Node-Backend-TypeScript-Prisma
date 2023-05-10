@@ -57,3 +57,8 @@ export const uploadWithMulter = (req: Request, res: Response) => {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error?.message ?? error });
   }
 };
+
+export const deleteMulterFile = async (req: Request, res: Response) => {
+  try {
+  } catch (error) {}
+};
